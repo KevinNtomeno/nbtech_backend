@@ -1,20 +1,21 @@
 const { Sequelize } = require('sequelize');
 
-if (!process.env.DATABASE_URL) {
-  console.error('❌ A variável DATABASE_URL não está definida. Verifique no painel do Render.');
-  process.exit(1); // encerra a aplicação imediatamente
-}
-
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: 'postgres',
-  protocol: 'postgres',
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false
-    }
-  },
-  logging: false // opcional: remove logs SQL no terminal
-});
+const sequelize = new Sequelize(
+  process.env.DB_NAME,       // nome do banco
+  process.env.DB_USER,       // usuário
+  process.env.DB_PASSWORD,   // senha
+  {
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT || 5432,
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    },
+    logging: false
+  }
+);
 
 module.exports = sequelize;
