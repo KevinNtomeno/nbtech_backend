@@ -8,11 +8,12 @@ const sequelize = require('./config/database');
 const app = express();
 const PORT = process.env.PORT || 9000;
 
-// CORS: Permitir localhost e o frontend hospedado no Render
+// ✅ Lista de origens permitidas
 const allowedOrigins = [
   'https://bntech-frontend1.onrender.com'
 ];
 
+// ✅ Configuração de CORS
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -24,45 +25,44 @@ app.use(cors({
   credentials: true
 }));
 
-// Middlewares
+// ✅ Middleware de parsing
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// Sessão
+// ✅ Configuração de sessão com suporte a HTTPS e frontend externo
 app.use(session({
-  secret: 'seuSegredoAqui',
+  secret: 'seuSegredoAqui',  // coloque uma string mais segura depois
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false,         // true só se for HTTPS
+    secure: true,        // ✅ Importante para HTTPS no Render
     httpOnly: true,
-    sameSite: 'lax'        // use 'none' se for HTTPS com domínios diferentes
+    sameSite: 'none'     // ✅ Necessário para cookies entre domínios
   }
 }));
 
-// Rota de teste
+// ✅ Rota de teste
 app.get('/', (req, res) => {
   res.json({ message: 'API funcionando!' });
 });
 
-// Models
-const Usuario = require('./models/usuarios');
-const Cliente = require("./models/clientes");
-const Servico = require("./models/servicos");
-const Vendas = require("./models/vendas");
-const VendaServico = require("./models/VendaServico");
-const Despesas = require("./models/despesa");
-const Agendamento = require("./models/agendamento");
-const AgendamentoServico = require("./models/agendaServico");
+// ✅ Importa models para garantir que tabelas sejam criadas
+require('./models/usuarios');
+require('./models/clientes');
+require('./models/servicos');
+require('./models/vendas');
+require('./models/VendaServico');
+require('./models/despesa');
+require('./models/agendamento');
+require('./models/agendaServico');
 
-// Controllers
-const UsuarioController = require("./controllers/usuarioController");
-const ClientesController = require("./controllers/clientesController");
+// ✅ Importa e usa os controllers
+const UsuarioController = require('./controllers/usuarioController');
+const ClientesController = require('./controllers/clientesController');
+app.use('/', UsuarioController);
+app.use('/', ClientesController);
 
-app.use("/", UsuarioController);
-app.use("/", ClientesController);
-
-// Sessão
+// ✅ Verifica sessão
 app.get('/sessao', (req, res) => {
   if (req.session.usuario) {
     res.json({ logado: true, usuario: req.session.usuario });
@@ -71,6 +71,7 @@ app.get('/sessao', (req, res) => {
   }
 });
 
+// ✅ Encerra sessão
 app.get('/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) {
@@ -82,7 +83,7 @@ app.get('/logout', (req, res) => {
   });
 });
 
-// Inicializa servidor e banco
+// ✅ Inicializa servidor e banco
 (async () => {
   try {
     await sequelize.authenticate();
