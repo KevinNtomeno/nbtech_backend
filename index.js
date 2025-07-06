@@ -10,7 +10,6 @@ const PORT = process.env.PORT || 9000;
 
 // CORS: Permitir localhost e o frontend hospedado no Render
 const allowedOrigins = [
-  'http://localhost:8080',
   'https://bntech-frontend1.onrender.com'
 ];
 
