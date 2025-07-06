@@ -97,4 +97,3 @@ app.get('/logout', (req, res) => {
     console.error('❌ Erro ao conectar ao banco de dados:', err);
   }
 })();
-
